@@ -1,24 +1,46 @@
-import React from "react";
+import styled from "styled-components";
 import apiData from "./api";
-import PersonInfo from "./PersonInfo";
+import { useFetch } from "./hooks/useFetch";
+import Info from "./components/Info";
+import List from "./components/List";
+
+export interface Person {
+  firstNameLastName: string;
+  jobTitle: string;
+  emailAddress: string;
+}
+export interface PersonData extends Person {
+  id: string,
+  data: Person
+};
+export interface ApiData {
+  isLoading: boolean,
+  isError: boolean,
+  data: PersonData[],
+  fetchAgain: () => void,
+};
 
 function App() {
-  const [data, setData] = React.useState([]);
-  const [selected, setSelected] = React.useState([]);
-
-  //  TODO fetch contacts using apiData function, handle loading and error states
+  const { data, isLoading, isError, fetchAgain } = useFetch<Person>(apiData, []);
 
   return (
-    <div className="App">
-      <div className="selected">Selected contacts: {selected.length}</div>
-      <div className="list">
-        {data.map((personInfo) => (
-          // @ts-ignore
-          <PersonInfo key={personInfo.id} data={personInfo} />
-        ))}
-      </div>
-    </div>
+    <AppWrapper>
+      <List data={data} />
+      <Info loading={isLoading} error={isError} handleAgain={fetchAgain} />
+    </AppWrapper>
   );
 }
 
 export default App;
+
+// styled-components
+
+const AppWrapper = styled.div`
+  margin: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: fit-content;
+  text-align: center;
+  justify-content: center;
+  text-align: center;
+`;
